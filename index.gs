@@ -1,6 +1,6 @@
-const autoCalculation = new AutoCalculation(4)
+const autoCalculation = new AutoCalculation(2)
 
-const run = () => {
+const calculation = () => {
     let i = 0
     let column = 5
 
