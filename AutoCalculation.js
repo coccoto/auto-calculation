@@ -20,15 +20,12 @@ class AutoCalculation {
 
         let i = rowBalance
 
-        const background = '#ffffff'
-
         while (i < tableHeight) {
             cellSum = this.sheet.getRange(i, columnBalance)
             cellData = this.sheet.getRange(i, columnBalance - 1)
 
             if (! cellData.isBlank()) {
-
-                if (cellData.getBackground() === background) {
+                if (cellData.getBackground() === '#ffffff') {
                     cellSum.setValue(cellBalance.getValue() - cellData.getValue())
                     cellBalance = cellSum
 
