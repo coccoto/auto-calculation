@@ -6,6 +6,24 @@ class AutoCalculation {
     }
 
     /**
+     * 背景色から支出 or 収入を判定しセットする。
+     * 
+     * @param {object} cellSum
+     * @param {object} cellData
+     * @param {object} cellBalance
+     * @return {void}
+     */
+    setValue(cellSum, cellData, cellBalance) {
+
+        if (cellData.getBackground() === '#ffffff') {
+            cellSum.setValue(cellBalance.getValue() - cellData.getValue())
+
+        } else {
+            cellSum.setValue(cellBalance.getValue() + cellData.getValue())
+        }
+    }
+
+    /**
      * 計算し出力する。
      * 
      * @param {number} rowBalance
@@ -25,14 +43,8 @@ class AutoCalculation {
             cellData = this.sheet.getRange(i, columnBalance - 1)
 
             if (! cellData.isBlank()) {
-                if (cellData.getBackground() === '#ffffff') {
-                    cellSum.setValue(cellBalance.getValue() - cellData.getValue())
-                    cellBalance = cellSum
-
-                } else {
-                    cellSum.setValue(cellBalance.getValue() + cellData.getValue())
-                    cellBalance = cellSum
-                }
+                this.setValue(cellSum, cellData, cellBalance)
+                cellBalance = cellSum
             }
             i ++
         }
@@ -64,7 +76,7 @@ class AutoCalculation {
     execute(table) {
 
         let rowBalance = 2
-        let columnBalance = 4
+        let columnBalance = 5
         let cellBalance = this.sheet.getRange(rowBalance, columnBalance)
 
         const tableHeight = this.tableHeight()
@@ -74,7 +86,7 @@ class AutoCalculation {
         while (i < table) {
             this.calculation(rowBalance + 1, columnBalance, cellBalance, tableHeight)
 
-            columnBalance = columnBalance + 2
+            columnBalance = columnBalance + 3
             cellBalance = this.sheet.getRange(rowBalance, columnBalance)
             i ++
         }
