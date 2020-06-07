@@ -1,4 +1,4 @@
-const table = 4
+const table = 5
 
 const autoCalculation = () => {
     const autoCalculation = new AutoCalculation()
