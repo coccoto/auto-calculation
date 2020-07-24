@@ -13,12 +13,22 @@ export default class AutoCalculation {
         this.sheet = SpreadsheetApp.getActiveSheet()
     }
 
-    private calculate(tables: object, baranceValue: number) {
+    private refresh(selected:Spreadsheet.Range, result: {[name: string]: string[][]}): void {
 
-        this.calculator.main(tables, baranceValue)
+        const values: string[][] = []
+
+        for (let value of result.values) {
+            values.push(value)
+        }
+        selected.setValues(values)
     }
 
-    private tableRegister(selected: Spreadsheet.Range): object {
+    private calculate(tables: {[name: string]: string[][]}, baranceValue: number): {[name: string]: string[][]} {
+
+        return this.calculator.main(tables, baranceValue)
+    }
+
+    private tableRegister(selected: Spreadsheet.Range): {[name: string]: string[][]} {
 
         const values: string[][] = selected.getValues()
         const colors: string[][] = selected.getBackgrounds()
@@ -35,7 +45,8 @@ export default class AutoCalculation {
         const rowTo: number = tableLength
         const columnFrom: number = columnBalance - 1
         const columnTo: number = 2
-        return this.sheet.getRange(rowFrom, columnFrom, columnTo, rowTo)
+
+        return this.sheet.getRange(rowFrom, columnFrom, rowTo, columnTo)
     }
 
     private tableLength(i: number = 3): number {
@@ -55,15 +66,15 @@ export default class AutoCalculation {
         let baranceValue: string = cellBarance.getValue()
 
         if (baranceValue === '') {
-            console.log('END')
             return
         }
-        console.log('CONTINUE')
         const tableLength: number = this.tableLength()
         const selected: Spreadsheet.Range = this.select(rowBalance, columnBalance, tableLength)
-        const tables: object = this.tableRegister(selected)
+        const tables: {[name: string]: string[][]} = this.tableRegister(selected)
 
-        this.calculate(tables, Number(baranceValue))
+        const result: {[name: string]: string[][]} = this.calculate(tables, Number(baranceValue))
+        this.refresh(selected, result)
+
         this.main(rowBalance, columnBalance + 3)
     }
 }
