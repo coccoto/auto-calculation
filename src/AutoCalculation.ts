@@ -1,41 +1,44 @@
+import Calculator from '@src/Calculator'
+// declares
 import Spreadsheet = GoogleAppsScript.Spreadsheet
 
 export default class AutoCalculation {
 
+    private calculator: Calculator
     private sheet: Spreadsheet.Sheet
 
     public constructor() {
 
+        this.calculator = new Calculator()
         this.sheet = SpreadsheetApp.getActiveSheet()
     }
 
-    private calculation(ROW_BALANCE: number, columnBalance: number, cellBalanceValue: number , tableLength: number): void {
+    private calculate(tables: object, baranceValue: number) {
 
-        const rowStart: number = ROW_BALANCE + 1
-        const columnStart: number = columnBalance - 1
-        const numItems: number = 2
-        const selectRagen: Spreadsheet.Range = this.sheet.getRange(rowStart, columnStart, tableLength, numItems)
-
-        const values: string[][] = selectRagen.getValues()
-        const colors: string[][] = selectRagen.getBackgrounds()
-
-        for (let index in values) {
-            if (values[index][0] !== '') {
-                if (colors[index][0] === '#ffffff') {
-                    values[index][1] = String(cellBalanceValue - Number(values[index][0]))
-                } else {
-                    values[index][1] = String(cellBalanceValue + Number(values[index][0]))
-                }
-            }
-            if (values[index][1] !== '') {
-                cellBalanceValue = Number(values[index][1])
-            }
-        }
-
-        selectRagen.setValues(values)
+        this.calculator.main(tables, baranceValue)
     }
 
-    private tableLength(i: number): number {
+    private tableRegister(selected: Spreadsheet.Range): object {
+
+        const values: string[][] = selected.getValues()
+        const colors: string[][] = selected.getBackgrounds()
+
+        return {
+            values: values,
+            colors: colors,
+        }
+    }
+
+    private select(rowBalance: number, columnBalance: number, tableLength: number): Spreadsheet.Range {
+
+        const rowFrom: number = rowBalance + 1
+        const rowTo: number = tableLength
+        const columnFrom: number = columnBalance - 1
+        const columnTo: number = 2
+        return this.sheet.getRange(rowFrom, columnFrom, columnTo, rowTo)
+    }
+
+    private tableLength(i: number = 3): number {
 
         let endPoint: string = this.sheet.getRange(i, 1).getValue()
 
@@ -46,24 +49,21 @@ export default class AutoCalculation {
         return this.tableLength(i)
     }
 
-    public main(NUM_TABLE: number):void {
+    public main(rowBalance: number = 2, columnBalance: number = 5): void {
 
-        const ROW_BALANCE: number = 2
-        let columnBalance: number = 5
-        let cellBarance: Spreadsheet.Range = this.sheet.getRange(ROW_BALANCE, columnBalance)
-        let cellBaranceValue: number = cellBarance.getValue()
+        let cellBarance: Spreadsheet.Range = this.sheet.getRange(rowBalance, columnBalance)
+        let baranceValue: string = cellBarance.getValue()
 
-        const tableLength: number = this.tableLength(3)
-
-        let i: number = 1
-
-        while (i <= NUM_TABLE) {
-            this.calculation(ROW_BALANCE, columnBalance, cellBaranceValue, tableLength)
-
-            columnBalance = columnBalance + 3
-            cellBaranceValue = this.sheet.getRange(ROW_BALANCE, columnBalance).getValue()
-
-            i ++
+        if (baranceValue === '') {
+            console.log('END')
+            return
         }
+        console.log('CONTINUE')
+        const tableLength: number = this.tableLength()
+        const selected: Spreadsheet.Range = this.select(rowBalance, columnBalance, tableLength)
+        const tables: object = this.tableRegister(selected)
+
+        this.calculate(tables, Number(baranceValue))
+        this.main(rowBalance, columnBalance + 3)
     }
 }
