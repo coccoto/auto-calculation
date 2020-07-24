@@ -31,6 +31,9 @@ module.exports = (env, argv) => {
             modules: [
                 Path.resolve(__dirname, 'node_modules'),
             ],
+            alias: {
+                '@src': Path.resolve(__dirname, 'src'),
+            }
         },
         module: {
             rules: RULES,
