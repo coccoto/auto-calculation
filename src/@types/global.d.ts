@@ -1,3 +1,3 @@
 declare const global: {
-    main: object
+    AutoCalculation: object
 }
