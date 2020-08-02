@@ -42,8 +42,8 @@ export default class AutoCalculation {
     private select(rowBalance: number, columnBalance: number, tableLength: number): Spreadsheet.Range {
 
         const rowFrom: number = rowBalance + 1
-        const rowTo: number = tableLength
         const columnFrom: number = columnBalance - 1
+        const rowTo: number = tableLength
         const columnTo: number = 2
 
         return this.sheet.getRange(rowFrom, columnFrom, rowTo, columnTo)
