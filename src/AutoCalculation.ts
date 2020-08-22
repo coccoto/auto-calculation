@@ -77,9 +77,9 @@ export default class AutoCalculation {
         const selected: Spreadsheet.Range = this.select(rowBalance, columnBalance, tableLength)
         // 計算処理に用いる情報を二次元配列で取得する。
         const tables: {[name: string]: string[][]} = this.tableRegister(selected)
-        // 計算処理を決定する。
+        // 計算処理を決定する。計算処理のフラグは背景色が白以外の時、true となる。
         const cellAddSwitch: Spreadsheet.Range = this.sheet.getRange(rowBalance, columnBalance - 1)
-        const addFlag: boolean = cellAddSwitch.getValue()
+        const addFlag: boolean = cellAddSwitch.getBackground() !== '#ffffff'
 
         const result: {[name: string]: string[][]} = this.calculate(tables, Number(baranceValue), addFlag)
         this.refresh(selected, result)
