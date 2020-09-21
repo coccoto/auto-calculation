@@ -1,3 +1,4 @@
 declare const global: {
-    AutoCalculation: object
+    // AutoCalculation: object,
+    doGet: object
 }

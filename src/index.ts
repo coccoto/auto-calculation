@@ -1,6 +1,7 @@
-import AutoCalculation from '@src/AutoCalculation'
+import AutoCalculation from '@src/app/AutoCalculation'
 
-global.AutoCalculation = (): void => {
+global.doGet = (): GoogleAppsScript.HTML.HtmlOutput => {
     const autoCalculation: AutoCalculation = new AutoCalculation()
     autoCalculation.main()
+    return HtmlService.createHtmlOutputFromFile('notice')
 }

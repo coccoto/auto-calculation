@@ -1,4 +1,4 @@
-import Calculator from '@src/Calculator'
+import Calculator from '@src/app/Calculator'
 // declares
 import Spreadsheet = GoogleAppsScript.Spreadsheet
 
