@@ -61,6 +61,14 @@ export default class AutoCalculation {
         return this.tableLength(i)
     }
 
+    /**
+     * アクティブシートを取得する
+     */
+    public getSheetName(): string {
+
+        return this.sheet.getName()
+    }
+
     public main(rowBalance: number = 2, columnBalance: number = 5): void {
 
         // 残高セルから残高を取得する。
