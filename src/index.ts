@@ -11,3 +11,8 @@ global.doGet = (): GoogleAppsScript.HTML.HtmlOutput => {
     autoCalculation.main()
     return htmlGenerator(autoCalculation)
 }
+
+global.AutoCalculation = (): void => {
+    const autoCalculation: AutoCalculation = new AutoCalculation()
+    autoCalculation.main()
+}
