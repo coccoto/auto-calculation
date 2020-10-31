@@ -1,19 +1,30 @@
-import Calculator from '@src/app/Calculator'
 // declares
 import Spreadsheet = GoogleAppsScript.Spreadsheet
+// modules
+import Calculator from '@src/app/Calculator'
+// helper
+import TableMeasure from '@src/app/helper/TableMeasure'
 
 export default class AutoCalculation {
 
-    private calculator: Calculator
     private sheet: Spreadsheet.Sheet
+
+    private calculator: Calculator
+    private tableMeasure: TableMeasure
+
+    private master: {[name: string]: number[]}
 
     public constructor() {
 
-        this.calculator = new Calculator()
         this.sheet = SpreadsheetApp.getActiveSheet()
+
+        this.calculator = new Calculator()
+        this.tableMeasure = new TableMeasure(this.sheet)
+
+        this.master = {}
     }
 
-    private refresh(selected:Spreadsheet.Range, result: {[name: string]: string[][]}): void {
+    private setWorkTable(selected: Spreadsheet.Range, result: {[name: string]: string[][]}): void {
 
         const values: string[][] = []
 
@@ -23,13 +34,7 @@ export default class AutoCalculation {
         selected.setValues(values)
     }
 
-    private calculate(tables: {[name: string]: string[][]}, baranceValue: number, addFlag: boolean): {[name: string]: string[][]} {
-
-        this.calculator.switchAdd(addFlag)
-        return this.calculator.main(tables, baranceValue)
-    }
-
-    private tableRegister(selected: Spreadsheet.Range): {[name: string]: string[][]} {
+    private extraction(selected: Spreadsheet.Range): {[name: string]: string[][]} {
 
         const values: string[][] = selected.getValues()
         const colors: string[][] = selected.getBackgrounds()
@@ -40,58 +45,58 @@ export default class AutoCalculation {
         }
     }
 
-    private select(rowBalance: number, columnBalance: number, tableLength: number): Spreadsheet.Range {
+    private selectWorkTable(row: number, column: number, numRows: number, numColumns: number): Spreadsheet.Range {
 
-        const rowFrom: number = rowBalance + 1
-        const columnFrom: number = columnBalance - 1
-        const rowTo: number = tableLength
-        const columnTo: number = 2
-
-        return this.sheet.getRange(rowFrom, columnFrom, rowTo, columnTo)
-    }
-
-    private tableLength(i: number = 3): number {
-
-        let endPoint: string = this.sheet.getRange(i, 1).getValue()
-
-        if (endPoint === '-') {
-            return (i - 2 - 1)
-        }
-        i ++
-        return this.tableLength(i)
+        return this.sheet.getRange(row, column, numRows, numColumns + 1)
     }
 
     /**
-     * アクティブシートを取得する
+     * @再帰処理
      */
-    public getSheetName(): string {
+    private assemble(height: number, width: number, row: number = this.master.INI_POSITION_FROM[0], column: number = this.master.INI_POSITION_FROM[1]) {
 
-        return this.sheet.getName()
-    }
+        // ワークテーブルを選択し値を取り出す
+        const selectedWorkTable: Spreadsheet.Range = this.selectWorkTable(row, column, height, width)
+        const workValues: {[name: string]: string[][]} = this.extraction(selectedWorkTable)
 
-    public main(rowBalance: number = 2, columnBalance: number = 5): void {
-
-        // 残高セルから残高を取得する。
-        let cellBarance: Spreadsheet.Range = this.sheet.getRange(rowBalance, columnBalance)
-        let baranceValue: string = cellBarance.getValue()
-
-        // 残高セルが空欄の時、全ての処理を終了する。
-        if (baranceValue === '') {
+        // 残高が空白の場合、処理を終了
+        if (workValues.values[0][width] === '') {
             return
         }
-        // テーブルの縦幅を取得する。
-        const tableLength: number = this.tableLength()
-        // 残高セルから下の情報をテーブルの縦幅分取得する。
-        const selected: Spreadsheet.Range = this.select(rowBalance, columnBalance, tableLength)
-        // 計算処理に用いる情報を二次元配列で取得する。
-        const tables: {[name: string]: string[][]} = this.tableRegister(selected)
-        // 計算処理を決定する。計算処理のフラグは背景色が白以外の時、true となる。
-        const cellAddSwitch: Spreadsheet.Range = this.sheet.getRange(rowBalance, columnBalance - 1)
-        const addFlag: boolean = cellAddSwitch.getBackground() !== '#ffffff'
 
-        const result: {[name: string]: string[][]} = this.calculate(tables, Number(baranceValue), addFlag)
-        this.refresh(selected, result)
+        // 背景色が白以外の場合、プラスモードに変更
+        const addFlag: boolean = workValues.colors[0][0] !== '#ffffff'
+        // 残高を取得
+        const baranchCell: Spreadsheet.Range = this.sheet.getRange(row, column + 1)
+        const balanceValue: number = baranchCell.getValue()
 
-        this.main(rowBalance, columnBalance + 3)
+        // 計算を実行
+        const result: {[name: string]: string[][]} = this.calculator.main(width, workValues, balanceValue, addFlag)
+        // 処理結果をテーブルに反映
+        this.setWorkTable(selectedWorkTable, result)
+
+        // 次のテーブルに移動
+        const nextTableColumn = column + 1
+
+        const nextPositionFrom = [
+            this.master.INI_POSITION_FROM[0],
+            nextTableColumn + width,
+        ]
+        // 再帰処理
+        this.assemble(height, width, nextPositionFrom[0], nextPositionFrom[1])
+    }
+
+    public main(): void {
+
+        // 縦幅、横幅を取得
+        const workHeight: number = this.tableMeasure.height(this.master.INI_POSITION_FROM[0])
+        const workWidth: number = this.master.INI_POSITION_TO[1] - this.master.INI_POSITION_FROM[1]
+
+        this.assemble(workHeight, workWidth)
+    }
+
+    public setMaster(master: {[name: string]: number[]}): void {
+
+        this.master = master
     }
 }

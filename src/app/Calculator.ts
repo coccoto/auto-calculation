@@ -1,58 +1,35 @@
 export default class Calculator {
 
-    private addFlag: boolean
+    private caluclatePush(targetValue: string, balanceValue: number, color: string, addFlag: boolean): string {
 
-    public constructor() {
-
-        this.addFlag = false
-    }
-
-    /**
-     * 背景色が白の時は残高をマイナス、白以外の時はプラスする。
-     * addFlag が true の時は上記と逆処理を実行する。
-     */
-    private push(values: string[], colors: string[], baranceValue: number): string {
-
-        if (colors[0] === '#ffffff') {
-            if (this.addFlag) {
-                return values[1] = String(baranceValue + Number(values[0]))
+        // 背景色で計算処理を変更
+        if (color === '#ffffff') {
+            if (addFlag) {
+                return String(balanceValue + Number(targetValue))
             } else {
-                return values[1] = String(baranceValue - Number(values[0]))
+                return String(balanceValue - Number(targetValue))
             }
         } else {
-            if (this.addFlag) {
-                return values[1] = String(baranceValue - Number(values[0]))
+            if (addFlag) {
+                return String(balanceValue - Number(targetValue))
             } else {
-                return values[1] = String(baranceValue + Number(values[0]))
+                return String(balanceValue + Number(targetValue))
             }
         }
     }
 
-    private calculate(tables: {[name: string]: string[][]}, baranceValue: number): {[name: string]: string[][]} {
+    public main(lastIndex: number, workValues: {[name: string]: string[][]}, balanceValue: number, addFlag: boolean): {[name: string]: string[][]} {
 
-        for (let index in tables.values) {
-            // テーブルに値が存在していれば計算処理を実行する。
-            if (tables.values[index][0] !== '') {
-                tables.values[index][1] = this.push(tables.values[index], tables.colors[index], baranceValue)
-            }
-            //　テーブルに値が存在していれば残高を更新する。
-            if (tables.values[index][1] !== '') {
-                baranceValue = Number(tables.values[index][1])
+        for (let index in workValues.values) {
+            if (workValues.values[index][lastIndex - 1] !== '') {
+                workValues.values[index][lastIndex] = this.caluclatePush (
+                    workValues.values[index][lastIndex - 1], balanceValue, workValues.colors[index][lastIndex - 1], addFlag
+                )
+
+            } else if (workValues.values[index][lastIndex] !== '') {
+                balanceValue = Number(workValues.values[index][lastIndex])
             }
         }
-        return tables
-    }
-
-    /**
-     * 計算の処理方法を決定する。
-     */
-    public switchAdd(addFlag: boolean): void {
-
-        this.addFlag = addFlag
-    }
-
-    public main(tables: {[name: string]: string[][]}, baranceValue: number): {[name: string]: string[][]} {
-
-        return this.calculate(tables, baranceValue)
+        return workValues
     }
 }

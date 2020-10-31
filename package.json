@@ -12,7 +12,6 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {},
   "devDependencies": {
     "@google/clasp": "^2.3.0",
     "@types/google-apps-script": "^1.0.14",

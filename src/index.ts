@@ -1,18 +1,32 @@
 import AutoCalculation from '@src/app/AutoCalculation'
 
-const htmlGenerator = (autoCalculation: AutoCalculation) => {
+const MASTER_POSITION: {[name: string]: number[]} = {
+    INI_POSITION_FROM: [
+        2, // row
+        3, // column
+    ],
+    INI_POSITION_TO: [
+        2, // row
+        4, // column
+    ],
+}
+
+const run = (): void => {
+    const autoCalculation: AutoCalculation = new AutoCalculation()
+    autoCalculation.setMaster(MASTER_POSITION)
+    autoCalculation.main()
+}
+
+const htmlGenerator = (): GoogleAppsScript.HTML.HtmlOutput => {
     const html = HtmlService.createTemplateFromFile('notice')
-    html.sheetName = autoCalculation.getSheetName()
     return html.evaluate().setTitle('AutoCalculation')
 }
 
-global.doGet = (): GoogleAppsScript.HTML.HtmlOutput => {
-    const autoCalculation: AutoCalculation = new AutoCalculation()
-    autoCalculation.main()
-    return htmlGenerator(autoCalculation)
+global.AutoCalculation = (): void => {
+    run()
 }
 
-global.AutoCalculation = (): void => {
-    const autoCalculation: AutoCalculation = new AutoCalculation()
-    autoCalculation.main()
+global.doGet = (): GoogleAppsScript.HTML.HtmlOutput => {
+    run()
+    return htmlGenerator()
 }
