@@ -65,13 +65,13 @@ export default class AutoCalculation {
         }
 
         // 背景色が白以外の場合、プラスモードに変更
-        const addFlag: boolean = workValues.colors[0][0] !== '#ffffff'
+        const isAdd: boolean = workValues.colors[0][0] !== '#ffffff'
         // 残高を取得
         const baranchCell: Spreadsheet.Range = this.sheet.getRange(row, column + 1)
         const balanceValue: number = baranchCell.getValue()
 
         // 計算を実行
-        const result: {[name: string]: string[][]} = this.calculator.main(width, workValues, balanceValue, addFlag)
+        const result: {[name: string]: string[][]} = this.calculator.main(width, workValues, balanceValue, isAdd)
         // 処理結果をテーブルに反映
         this.setWorkTable(selectedWorkTable, result)
 
