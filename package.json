@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "login": "clasp login",
     "build": "webpack --mode development",
     "build:production": "webpack --mode production",
     "clasp:push": "clasp push",

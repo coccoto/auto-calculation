@@ -7,7 +7,7 @@ const MASTER_POSITION: {[name: string]: number[]} = {
     ],
     INI_POSITION_TO: [
         2, // row
-        4, // column
+        5, // column
     ],
 }
 
