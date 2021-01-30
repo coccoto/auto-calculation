@@ -53,7 +53,7 @@ export default class AutoCalculation {
     /**
      * @再帰処理
      */
-    private assemble(height: number, width: number, row: number = this.master.INI_POSITION_FROM[0], column: number = this.master.INI_POSITION_FROM[1]) {
+    private assemble(height: number, width: number, row: number = this.master.INI_POSITION_FROM[0], column: number = this.master.INI_POSITION_FROM[1]): void {
 
         // ワークテーブルを選択し値を取り出す
         const selectedWorkTable: Spreadsheet.Range = this.selectWorkTable(row, column, height, width)
@@ -65,7 +65,7 @@ export default class AutoCalculation {
         }
 
         // 背景色が白以外の場合、プラスモードに変更
-        const isAdd: boolean = workValues.colors[0][0] !== '#ffffff'
+        const isAdd: boolean = workValues.colors[0][width - 1] !== '#ffffff'
         // 残高を取得
         const baranchCell: Spreadsheet.Range = this.sheet.getRange(row, column + row)
         const balanceValue: number = baranchCell.getValue()
