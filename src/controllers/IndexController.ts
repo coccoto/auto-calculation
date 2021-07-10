@@ -25,9 +25,14 @@ export default class IndexController {
 
         this.errorHandler = new ErrorHandler()
         this.queryModel = new QueryModel(this.errorHandler)
-        this.tableMeasureModel = new TableMeasureModel()
-        this.calculationModel = new CalculationModel()
-        this.refreshModel = new RefreshModel()
-        this.selectWorkTableModel = new SelectWorkTableModel()
+        this.tableMeasureModel = new TableMeasureModel(this.sheet)
+        this.calculationModel = new CalculationModel(this.sheet)
+        this.refreshModel = new RefreshModel(this.sheet)
+        this.selectWorkTableModel = new SelectWorkTableModel(this.sheet)
+    }
+
+    public main(): void {
+
+        
     }
 }
