@@ -56,4 +56,9 @@ export default class WorkTableModel {
         const toColumnIniPosition: number = Number(this.queryModel.getMasterValue('toColumnIniPosition'))
         return (toColumnIniPosition - fromColumnIniPosition)
     }
+
+    public setWorkTable(selected: Spreadsheet.Range, workValues: {[name: string]: string[][]}): void {
+
+        selected.setValues(workValues.values)
+    }
 }
