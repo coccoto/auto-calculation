@@ -1,37 +1,39 @@
 // declares
 import Spreadsheet = GoogleAppsScript.Spreadsheet
-// models
-import ErrorHandler from '@src/models/common/ErrorHandler'
-import QueryModel from '@src/models/common/QueryModel'
-import WorkTableModel from '@src/models/WorkTableModel'
 
 export default class CalculationModel {
 
     private readonly sheet: Spreadsheet.Sheet
 
-    private readonly errorHandler: ErrorHandler
-    private readonly queryModel: QueryModel
-    private readonly workTableModel: WorkTableModel
-
     public constructor(sheet: Spreadsheet.Sheet) {
 
         this.sheet = sheet
-
-        this.errorHandler = new ErrorHandler()
-        this.queryModel = new QueryModel(this.errorHandler)
-        this.workTableModel = new WorkTableModel(this.sheet)
     }
 
-    public main(): void {
+    public getBalanceValue(expenseValue: number, balanceValue: number, isAddMode: boolean, isReverseMode: boolean): string {
 
-        const fromRowIniPosition = Number(this.queryModel.getMasterValue('fromRowIniPosition'))
-        const fromColumnIniPosition = Number(this.queryModel.getMasterValue('fromColumnIniPosition'))
-
-        this.assemble(fromRowIniPosition, fromColumnIniPosition)
+        if (! isAddMode) {
+            return this.calculateOrder(expenseValue, balanceValue, isReverseMode)
+        } else {
+            return this.calculateOrder(expenseValue, balanceValue, ! isReverseMode)
+        }
     }
 
-    private assemble(currentRow: number, currentColumn: number,): void {
+    private calculateOrder(expenseValue: number, balanceValue: number, isReverseMode: boolean): string {
 
-        this.workTableModel.getWorkTable(currentRow, currentColumn)
+        if (! isReverseMode) {
+            return String(balanceValue - expenseValue)
+        } else {
+            return String(balanceValue + expenseValue)
+        }
+    }
+
+    public getExpenseValue(lastBalanceValue: number, currentBalanceValue: number): string {
+
+        if (lastBalanceValue >= currentBalanceValue) {
+            return String(lastBalanceValue - currentBalanceValue)
+        } else {
+            return String(currentBalanceValue - lastBalanceValue)
+        }
     }
 }

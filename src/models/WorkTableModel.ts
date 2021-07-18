@@ -22,6 +22,17 @@ export default class WorkTableModel {
         this.tableMeasureModel = new TableMeasureModel(this.sheet)
     }
 
+    public getFromIniPosition(): {[key: string]: number} {
+
+        const fromRowIniPosition = Number(this.queryModel.getMasterValue('fromRowIniPosition'))
+        const fromColumnIniPosition = Number(this.queryModel.getMasterValue('fromColumnIniPosition'))
+
+        return {
+            row: fromRowIniPosition,
+            column: fromColumnIniPosition,
+        }
+    }
+
     public getWorkTable(row: number, column: number): Spreadsheet.Range {
 
         const workTableSize: {[key: string]: number} = this.getWorkTableSize()
@@ -31,7 +42,7 @@ export default class WorkTableModel {
     private getWorkTableSize(): {[key: string]: number} {
 
         const workTableHeight: number = this.tableMeasureModel.getHeight()
-        const workTableWidth: number = this.getWidth()
+        const workTableWidth: number = this.getWidth() + 1
 
         return {
             height: workTableHeight,
@@ -39,10 +50,10 @@ export default class WorkTableModel {
         }
     }
 
-    private getWidth(): number {
+    public getWidth(): number {
 
         const fromColumnIniPosition: number = Number(this.queryModel.getMasterValue('fromColumnIniPosition'))
         const toColumnIniPosition: number = Number(this.queryModel.getMasterValue('toColumnIniPosition'))
-        return (toColumnIniPosition - fromColumnIniPosition + 1)
+        return (toColumnIniPosition - fromColumnIniPosition)
     }
 }
