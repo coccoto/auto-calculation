@@ -23,19 +23,18 @@ export default class AssembleModel {
         this.lastBalanceValue = 0
     }
 
-    public main(workValues: {[name: string]: string[][]}, isReverseMode: boolean): {[name: string]: string[][]} {
+    public main(workValues: {[name: string]: string[][]}, lastIndex: number, isReverseMode: boolean): {[name: string]: string[][]} {
 
         this.lastBalanceValue = 0
+        this.colorManagerModel.setMainColor(workValues.colors[0][lastIndex])
 
         for (let index in workValues.values) {
-            workValues = this.assemble(workValues, Number(index), isReverseMode)
+            workValues = this.assemble(workValues, Number(index), lastIndex, isReverseMode)
         }
         return workValues
     }
 
-    private assemble(workValues: {[name: string]: string[][]}, index: number, isReverseMode: boolean): {[name: string]: string[][]} {
-
-        const lastIndex: number = workValues.values[index].length - 1
+    private assemble(workValues: {[name: string]: string[][]}, index: number, lastIndex: number, isReverseMode: boolean): {[name: string]: string[][]} {
 
         const expenseColor: string = workValues.colors[index][lastIndex - 1]
         const balanceColor: string = workValues.colors[index][lastIndex]

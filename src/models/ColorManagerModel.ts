@@ -5,9 +5,13 @@ export default class ColorManagerModel {
 
     private readonly sheet: Spreadsheet.Sheet
 
+    private mainColor: string
+
     public constructor(sheet: Spreadsheet.Sheet) {
 
         this.sheet = sheet
+
+        this.mainColor = ''
     }
 
     public isReverseMode(color: string): boolean {
@@ -20,7 +24,7 @@ export default class ColorManagerModel {
 
     public isIgnore(expenseColor: string, balanceColor: string): boolean {
 
-        if (expenseColor !== '#ffffff' && balanceColor === '#ffffff') {
+        if (expenseColor !== '#ffffff' && balanceColor === this.mainColor) {
             return true
         }
         return false
@@ -28,9 +32,14 @@ export default class ColorManagerModel {
 
     public isAddMode(expenseColor: string, balanceColor: string): boolean {
 
-        if (expenseColor !== '#ffffff' && balanceColor !== '#ffffff') {
+        if (expenseColor !== '#ffffff' && balanceColor !== this.mainColor) {
             return true
         }
         return false
+    }
+
+    public setMainColor(colorCode: string): void {
+
+        this.mainColor = colorCode
     }
 }

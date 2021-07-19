@@ -31,9 +31,9 @@ export default class CalculationModel {
     public getExpenseValue(lastBalanceValue: number, currentBalanceValue: number): string {
 
         if (lastBalanceValue >= currentBalanceValue) {
-            return String(lastBalanceValue - currentBalanceValue)
+            return String(Math.abs(lastBalanceValue) - Math.abs(currentBalanceValue))
         } else {
-            return String(currentBalanceValue - lastBalanceValue)
+            return String(Math.abs(currentBalanceValue) - Math.abs(lastBalanceValue))
         }
     }
 }

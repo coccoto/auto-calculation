@@ -43,12 +43,14 @@ export default class IndexController {
         const selectedWorkTable: Spreadsheet.Range = this.tableReferenceModel.selectTable(currentRow, currentColumn, workTableHeight, workTableWidth)
         const workValues: {[name: string]: string[][]} = this.tableReferenceModel.tableExtraction(selectedWorkTable)
 
-        if (workValues.values[0][workTableWidth - 1] === '') {
+        const lastIndex: number = workValues.values[0].length - 1
+
+        if (workValues.values[0][lastIndex] === '') {
             return
         }
-        const isReverseMode: boolean = this.colorManagerModel.isReverseMode(workValues.colors[0][workTableWidth - 1])
+        const isReverseMode: boolean = this.colorManagerModel.isReverseMode(workValues.colors[0][lastIndex - 1])
 
-        const result: {[name: string]: string[][]} = this.assembleModel.main(workValues, isReverseMode)
+        const result: {[name: string]: string[][]} = this.assembleModel.main(workValues, lastIndex, isReverseMode)
         this.workTableModel.setWorkTable(selectedWorkTable, result)
 
         const nextTableColumn = currentColumn + workTableWidth
