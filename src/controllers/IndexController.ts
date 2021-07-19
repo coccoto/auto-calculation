@@ -31,25 +31,27 @@ export default class IndexController {
     public main(): void {
 
         const fromIniPosition: {[key: string]: number} = this.workTableModel.getFromIniPosition()
-        this.reflectWorkTable(fromIniPosition.row, fromIniPosition.column)
+
+        const workTableSize: {[key: string]: number} = this.workTableModel.getWorkTableSize()
+        workTableSize.width = workTableSize.width
+
+        this.reflectWorkTable(fromIniPosition.row, fromIniPosition.column, workTableSize.height, workTableSize.width)
     }
 
-    private reflectWorkTable(currentRow: number, currentColumn: number): void {
+    private reflectWorkTable(currentRow: number, currentColumn: number, workTableHeight: number, workTableWidth: number): void {
 
-        const selectedWorkTable: Spreadsheet.Range = this.workTableModel.getWorkTable(currentRow, currentColumn)
-        const workValues: {[name: string]: string[][]} = this.tableReferenceModel.TableExtraction(selectedWorkTable)
+        const selectedWorkTable: Spreadsheet.Range = this.tableReferenceModel.selectTable(currentRow, currentColumn, workTableHeight, workTableWidth)
+        const workValues: {[name: string]: string[][]} = this.tableReferenceModel.tableExtraction(selectedWorkTable)
 
-        const workTableWidth: number = this.workTableModel.getWidth()
-
-        if (workValues.values[0][workTableWidth] === '') {
+        if (workValues.values[0][workTableWidth - 1] === '') {
             return
         }
-        const isReverseMode: boolean = this.colorManagerModel.isReverseMode(workValues.values[0][workTableWidth - 1])
+        const isReverseMode: boolean = this.colorManagerModel.isReverseMode(workValues.colors[0][workTableWidth - 1])
 
         const result: {[name: string]: string[][]} = this.assembleModel.main(workValues, isReverseMode)
         this.workTableModel.setWorkTable(selectedWorkTable, result)
 
-        const nextTableColumn = currentColumn + workTableWidth + 1
-        this.reflectWorkTable(currentRow, nextTableColumn)
+        const nextTableColumn = currentColumn + workTableWidth
+        this.reflectWorkTable(currentRow, nextTableColumn, workTableHeight, workTableWidth)
     }
 }

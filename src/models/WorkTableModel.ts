@@ -3,7 +3,6 @@ import Spreadsheet = GoogleAppsScript.Spreadsheet
 // models
 import ErrorHandler from '@src/models/common/ErrorHandler'
 import QueryModel from '@src/models/common/QueryModel'
-import TableMeasureModel from '@src/models/common/TableMeasureModel'
 
 export default class WorkTableModel {
 
@@ -11,7 +10,6 @@ export default class WorkTableModel {
 
     private readonly errorHandler: ErrorHandler
     private readonly queryModel: QueryModel
-    private readonly tableMeasureModel: TableMeasureModel
 
     public constructor(sheet: Spreadsheet.Sheet) {
 
@@ -19,13 +17,12 @@ export default class WorkTableModel {
 
         this.errorHandler = new ErrorHandler()
         this.queryModel = new QueryModel(this.errorHandler)
-        this.tableMeasureModel = new TableMeasureModel(this.sheet)
     }
 
     public getFromIniPosition(): {[key: string]: number} {
 
-        const fromRowIniPosition = Number(this.queryModel.getMasterValue('fromRowIniPosition'))
-        const fromColumnIniPosition = Number(this.queryModel.getMasterValue('fromColumnIniPosition'))
+        const fromRowIniPosition = Number(this.queryModel.getIniValue('fromRowIniPosition'))
+        const fromColumnIniPosition = Number(this.queryModel.getIniValue('fromColumnIniPosition'))
 
         return {
             row: fromRowIniPosition,
@@ -33,16 +30,10 @@ export default class WorkTableModel {
         }
     }
 
-    public getWorkTable(row: number, column: number): Spreadsheet.Range {
+    public getWorkTableSize(): {[key: string]: number} {
 
-        const workTableSize: {[key: string]: number} = this.getWorkTableSize()
-        return this.sheet.getRange(row, column, workTableSize.height, workTableSize.width)
-    }
-
-    private getWorkTableSize(): {[key: string]: number} {
-
-        const workTableHeight: number = this.tableMeasureModel.getHeight()
-        const workTableWidth: number = this.getWidth() + 1
+        const workTableHeight: number = this.getHeight()
+        const workTableWidth: number = this.getWidth()
 
         return {
             height: workTableHeight,
@@ -50,11 +41,20 @@ export default class WorkTableModel {
         }
     }
 
-    public getWidth(): number {
+    private getHeight(): number {
 
-        const fromColumnIniPosition: number = Number(this.queryModel.getMasterValue('fromColumnIniPosition'))
-        const toColumnIniPosition: number = Number(this.queryModel.getMasterValue('toColumnIniPosition'))
-        return (toColumnIniPosition - fromColumnIniPosition)
+        const sheetSize: {[key: string]: number} = this.queryModel.getSheetSize(this.sheet.getSheetName())
+        const headerHeight: number = Number(this.queryModel.getIniValue('fromRowIniPosition'))
+        const workTableHeight: number = sheetSize.height - headerHeight
+        return workTableHeight
+    }
+
+    private getWidth(): number {
+
+        const fromColumnIniPosition: number = Number(this.queryModel.getIniValue('fromColumnIniPosition'))
+        const toColumnIniPosition: number = Number(this.queryModel.getIniValue('toColumnIniPosition'))
+
+        return (toColumnIniPosition - fromColumnIniPosition + 1)
     }
 
     public setWorkTable(selected: Spreadsheet.Range, workValues: {[name: string]: string[][]}): void {

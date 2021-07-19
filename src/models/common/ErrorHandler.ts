@@ -10,12 +10,4 @@ export default class ErrorHandler {
         }
         return sheet
     }
-
-    public checkLimit(i: number): void {
-
-        if (i > 100) {
-            throw new Error()
-        }
-        return
-    }
 }

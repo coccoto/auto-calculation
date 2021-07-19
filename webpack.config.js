@@ -1,5 +1,6 @@
 const path = require('path')
 const gasWebpackPlugin = require('gas-webpack-plugin')
+const copyWebpackPlugin = require('copy-webpack-plugin')
 
 module.exports = (env, argv) => {
 
@@ -19,14 +20,14 @@ module.exports = (env, argv) => {
             path: path.resolve(__dirname, OUTPUT),
             filename: BUNDLE_FILE,
         },
-        devtool: IS_DEVELOPMENT ? 'inline-source-map' : 'none',
+        devtool: IS_DEVELOPMENT ? 'inline-source-map' : IS_DEVELOPMENT,
         resolve: {
             extensions: ['.js', '.ts'],
             modules: [
-                Path.resolve(__dirname, 'node_modules'),
+                path.resolve(__dirname, 'node_modules'),
             ],
             alias: {
-                '@src': Path.resolve(__dirname, SOURCE),
+                '@src': path.resolve(__dirname, SOURCE),
             },
         },
         module: {
@@ -34,6 +35,15 @@ module.exports = (env, argv) => {
         },
         plugins: [
             new gasWebpackPlugin(),
+            new copyWebpackPlugin({
+                patterns: [
+                    {
+                        from: 'appsscript.json',
+                        to: 'appsscript.json',
+                        context: path.resolve('.', 'src')
+                    },
+                ]
+            })
         ],
     }
 }

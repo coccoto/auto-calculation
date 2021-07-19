@@ -22,9 +22,28 @@ export default class QueryModel {
         return querySheet.getRange(1, 1)
     }
 
-    public getMasterValue(itemName: string): string {
+    public getIniValue(itemName: string): string {
 
-        this.query.setValue('=QUERY(query!A:B, "SELECT B WHERE A = ' + itemName + '"')
+        this.query.setValue('=QUERY(ini!A:B, "SELECT B WHERE A = ' + "'" + itemName + "'" + '")')
+        return this.query.getValue()
+    }
+
+    public getSheetSize(sheetName: string): {[key: string]: number} {
+
+        const periodPoint = this.getIniValue('periodPoint')
+
+        const sheetHeight: number = Number(this.getMatchValue(periodPoint, sheetName, 'A:A'))
+        const sheetWidth: number = Number(this.getMatchValue(periodPoint, sheetName, '1:1'))
+
+        return {
+            height: sheetHeight,
+            width: sheetWidth,
+        }
+    }
+
+    private getMatchValue(periodPoint: string, sheetName: string, direction: string) {
+
+        this.query.setValue('=MATCH("' + periodPoint + '", ' + sheetName + '!' + direction + ')')
         return this.query.getValue()
     }
 }

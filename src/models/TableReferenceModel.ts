@@ -19,7 +19,12 @@ export default class TableReferenceModel {
         this.queryModel = new QueryModel(this.errorHandler)
     }
 
-    public TableExtraction(selected: Spreadsheet.Range): {[name: string]: string[][]} {
+    public selectTable(row: number, column: number, height: number, width: number): Spreadsheet.Range {
+
+        return this.sheet.getRange(row, column, height, width)
+    }
+
+    public tableExtraction(selected: Spreadsheet.Range): {[name: string]: string[][]} {
 
         const values: string[][] = selected.getValues()
         const colors: string[][] = selected.getBackgrounds()

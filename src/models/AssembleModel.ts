@@ -1,11 +1,8 @@
 // declares
 import Spreadsheet = GoogleAppsScript.Spreadsheet
 // models
-import ErrorHandler from '@src/models/common/ErrorHandler'
-import QueryModel from '@src/models/common/QueryModel'
 import CalculationModel from '@src/models/CalculationModel'
 import ColorManagerModel from '@src/models/ColorManagerModel'
-import WorkTableModel from '@src/models/WorkTableModel'
 
 export default class AssembleModel {
 
@@ -38,7 +35,7 @@ export default class AssembleModel {
 
     private assemble(workValues: {[name: string]: string[][]}, index: number, isReverseMode: boolean): {[name: string]: string[][]} {
 
-        const lastIndex: number = 0
+        const lastIndex: number = workValues.values[index].length - 1
 
         const expenseColor: string = workValues.colors[index][lastIndex - 1]
         const balanceColor: string = workValues.colors[index][lastIndex]
@@ -53,7 +50,7 @@ export default class AssembleModel {
         const isAddMode: boolean = this.colorManagerModel.isAddMode(expenseColor, balanceColor)
 
         if (expenseValue !== '') {
-            workValues.values[index][lastIndex]　= this.calculationModel.getBalanceValue(Number(expenseValue), Number(balanceValue), isAddMode, isReverseMode)
+            workValues.values[index][lastIndex]　= this.calculationModel.getBalanceValue(Number(expenseValue), Number(this.lastBalanceValue), isAddMode, isReverseMode)
             balanceValue = workValues.values[index][lastIndex]
 
         } else if (balanceValue !== '') {
