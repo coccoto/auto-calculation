@@ -45,15 +45,13 @@ export default class WorkTableModel {
 
         const sheetSize: {[key: string]: number} = this.queryModel.getSheetSize(this.sheet.getSheetName())
         const headerHeight: number = Number(this.queryModel.getIniValue('fromRowIniPosition'))
-        const workTableHeight: number = sheetSize.height - headerHeight
-        return workTableHeight
+        return sheetSize.height - headerHeight
     }
 
     private getWidth(): number {
 
         const fromColumnIniPosition: number = Number(this.queryModel.getIniValue('fromColumnIniPosition'))
         const toColumnIniPosition: number = Number(this.queryModel.getIniValue('toColumnIniPosition'))
-
         return (toColumnIniPosition - fromColumnIniPosition + 1)
     }
 
