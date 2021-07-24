@@ -1,6 +1,8 @@
 // declares
 import Spreadsheet = GoogleAppsScript.Spreadsheet
 // models
+import ErrorHandler from '@src/models/common/ErrorHandler'
+import QueryModel from '@src/models/common/QueryModel'
 import AssembleModel from '@src/models/AssembleModel'
 import ColorManagerModel from '@src/models/ColorManagerModel'
 import RefreshModel from '@src/models/RefrachModel'
@@ -11,6 +13,8 @@ export default class IndexController {
 
     private readonly sheet: Spreadsheet.Sheet
 
+    private readonly errorHandler: ErrorHandler
+    private readonly queryModel: QueryModel
     private readonly assembleModel: AssembleModel
     private readonly colorManagerModel: ColorManagerModel
     private readonly refreshModel: RefreshModel
@@ -21,19 +25,19 @@ export default class IndexController {
 
         this.sheet = SpreadsheetApp.getActiveSheet()
 
+        this.errorHandler = new ErrorHandler()
+        this.queryModel = new QueryModel(this.sheet, this.errorHandler)
         this.assembleModel = new AssembleModel(this.sheet)
         this.colorManagerModel = new ColorManagerModel(this.sheet)
         this.refreshModel = new RefreshModel(this.sheet)
         this.tableReferenceModel = new TableReferenceModel(this.sheet)
-        this.workTableModel = new WorkTableModel(this.sheet)
+        this.workTableModel = new WorkTableModel(this.sheet, this.queryModel)
     }
 
     public main(): void {
 
         const fromIniPosition: {[key: string]: number} = this.workTableModel.getFromIniPosition()
-
         const workTableSize: {[key: string]: number} = this.workTableModel.getWorkTableSize()
-        workTableSize.width = workTableSize.width
 
         this.reflectWorkTable(fromIniPosition.row, fromIniPosition.column, workTableSize.height, workTableSize.width)
     }

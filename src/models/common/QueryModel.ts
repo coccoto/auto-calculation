@@ -5,45 +5,51 @@ import type ErrorHandler from '@src/models/common/ErrorHandler'
 
 export default class QueryModel {
 
-    private readonly query: Spreadsheet.Range
+    private readonly sheet: Spreadsheet.Sheet
 
     private readonly errorHandler: ErrorHandler
+    private readonly iniValues: {[key: string]: string}
 
-    public constructor(errorHandler: ErrorHandler) {
+    public constructor(sheet: Spreadsheet.Sheet, errorHandler: ErrorHandler) {
+
+        this.sheet = sheet
 
         this.errorHandler = errorHandler
-
-        this.query = this.getQuery()
+        this.iniValues = this.assembleIniValues()
     }
 
-    private getQuery(): Spreadsheet.Range {
+    public assembleIniValues(): {[key: string]: string} {
 
-        const querySheet: Spreadsheet.Sheet = this.errorHandler.checkSheet(SpreadsheetApp.getActiveSpreadsheet().getSheetByName('query'))
-        return querySheet.getRange(1, 1)
+        const result: {[key: string]: string} = {}
+
+        const iniSheet: Spreadsheet.Sheet = this.errorHandler.checkSheet(SpreadsheetApp.getActiveSpreadsheet().getSheetByName('ini'))
+
+        const range = iniSheet.getRange('A:B')
+        const values = range.getValues()
+
+        for (let i = 0; i < values.length; i ++) {
+
+            result[values[i][0]] = values[i][1]
+        }
+        return result
     }
 
     public getIniValue(itemName: string): string {
 
-        this.query.setValue('=QUERY(ini!A:B, "SELECT B WHERE A = ' + "'" + itemName + "'" + '")')
-        return this.query.getValue()
+        return this.iniValues[itemName]
     }
 
-    public getSheetSize(sheetName: string): {[key: string]: number} {
+    public getSheetSize(): {[key: string]: number} {
 
-        const periodPoint = this.getIniValue('periodPoint')
+        const toRowPoint: Spreadsheet.Range = this.sheet.getRange(this.sheet.getMaxRows(), 1)
+        const toColumnPoint: Spreadsheet.Range = this.sheet.getRange(1, this.sheet.getMaxColumns())
 
-        const sheetHeight: number = Number(this.getMatchValue(periodPoint, sheetName, 'A:A'))
-        const sheetWidth: number = Number(this.getMatchValue(periodPoint, sheetName, '1:1'))
+        const sheetHeight: number = toRowPoint.getNextDataCell(SpreadsheetApp.Direction.UP).getRow()
+        const sheetWidth: number = toColumnPoint.getNextDataCell(SpreadsheetApp.Direction.PREVIOUS).getColumn()
 
         return {
             height: sheetHeight,
             width: sheetWidth,
         }
-    }
-
-    private getMatchValue(periodPoint: string, sheetName: string, direction: string) {
-
-        this.query.setValue('=MATCH("' + periodPoint + '", ' + sheetName + '!' + direction + ')')
-        return this.query.getValue()
     }
 }

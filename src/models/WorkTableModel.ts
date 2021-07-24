@@ -1,22 +1,19 @@
 // declares
 import Spreadsheet = GoogleAppsScript.Spreadsheet
 // models
-import ErrorHandler from '@src/models/common/ErrorHandler'
-import QueryModel from '@src/models/common/QueryModel'
+import type QueryModel from '@src/models/common/QueryModel'
 
 export default class WorkTableModel {
 
     private readonly sheet: Spreadsheet.Sheet
 
-    private readonly errorHandler: ErrorHandler
     private readonly queryModel: QueryModel
 
-    public constructor(sheet: Spreadsheet.Sheet) {
+    public constructor(sheet: Spreadsheet.Sheet, queryModel: QueryModel) {
 
         this.sheet = sheet
 
-        this.errorHandler = new ErrorHandler()
-        this.queryModel = new QueryModel(this.errorHandler)
+        this.queryModel = queryModel
     }
 
     public getFromIniPosition(): {[key: string]: number} {
@@ -43,7 +40,7 @@ export default class WorkTableModel {
 
     private getHeight(): number {
 
-        const sheetSize: {[key: string]: number} = this.queryModel.getSheetSize(this.sheet.getSheetName())
+        const sheetSize: {[key: string]: number} = this.queryModel.getSheetSize()
         const headerHeight: number = Number(this.queryModel.getIniValue('fromRowIniPosition'))
         return sheetSize.height - headerHeight
     }
