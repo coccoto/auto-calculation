@@ -10,4 +10,11 @@ export default class ErrorHandler {
         }
         return sheet
     }
+
+    public checkInfiniteLoop(i: number): void {
+
+        if (i > 100) {
+            throw new Error()
+        }
+    }
 }

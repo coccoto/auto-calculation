@@ -5,7 +5,6 @@ import ErrorHandler from '@src/models/common/ErrorHandler'
 import QueryModel from '@src/models/common/QueryModel'
 import AssembleModel from '@src/models/AssembleModel'
 import ColorManagerModel from '@src/models/ColorManagerModel'
-import RefreshModel from '@src/models/RefrachModel'
 import TableReferenceModel from '@src/models/TableReferenceModel'
 import WorkTableModel from '@src/models/WorkTableModel'
 
@@ -17,7 +16,6 @@ export default class IndexController {
     private readonly queryModel: QueryModel
     private readonly assembleModel: AssembleModel
     private readonly colorManagerModel: ColorManagerModel
-    private readonly refreshModel: RefreshModel
     private readonly tableReferenceModel: TableReferenceModel
     private readonly workTableModel: WorkTableModel
 
@@ -29,7 +27,6 @@ export default class IndexController {
         this.queryModel = new QueryModel(this.sheet, this.errorHandler)
         this.assembleModel = new AssembleModel(this.sheet)
         this.colorManagerModel = new ColorManagerModel(this.sheet)
-        this.refreshModel = new RefreshModel(this.sheet)
         this.tableReferenceModel = new TableReferenceModel(this.sheet)
         this.workTableModel = new WorkTableModel(this.sheet, this.queryModel)
     }
