@@ -18,12 +18,12 @@ export default class WorkTableModel {
 
     public getFromIniPosition(): {[key: string]: number} {
 
-        const fromRowIniPosition = Number(this.queryModel.getIniValue('fromRowIniPosition'))
-        const fromColumnIniPosition = Number(this.queryModel.getIniValue('fromColumnIniPosition'))
+        const fromWorkRowPosition = Number(this.queryModel.getIniValue('fromWorkRowPosition'))
+        const fromWorkColumnPosition = Number(this.queryModel.getIniValue('fromWorkColumnPosition'))
 
         return {
-            row: fromRowIniPosition,
-            column: fromColumnIniPosition,
+            row: fromWorkRowPosition,
+            column: fromWorkColumnPosition,
         }
     }
 
@@ -41,15 +41,15 @@ export default class WorkTableModel {
     private getHeight(): number {
 
         const sheetSize: {[key: string]: number} = this.queryModel.getSheetSize()
-        const headerHeight: number = Number(this.queryModel.getIniValue('fromRowIniPosition'))
+        const headerHeight: number = Number(this.queryModel.getIniValue('fromWorkRowPosition'))
         return sheetSize.height - headerHeight
     }
 
     private getWidth(): number {
 
-        const fromColumnIniPosition: number = Number(this.queryModel.getIniValue('fromColumnIniPosition'))
-        const toColumnIniPosition: number = Number(this.queryModel.getIniValue('toColumnIniPosition'))
-        return (toColumnIniPosition - fromColumnIniPosition + 1)
+        const fromWorkColumnPosition: number = Number(this.queryModel.getIniValue('fromWorkColumnPosition'))
+        const toWorkColumnPosition: number = Number(this.queryModel.getIniValue('toWorkColumnPosition'))
+        return (toWorkColumnPosition - fromWorkColumnPosition + 1)
     }
 
     public setWorkTable(selected: Spreadsheet.Range, workValues: {[name: string]: string[][]}): void {

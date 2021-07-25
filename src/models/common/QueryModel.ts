@@ -18,14 +18,14 @@ export default class QueryModel {
         this.iniValues = this.assembleIniValues()
     }
 
-    public assembleIniValues(): {[key: string]: string} {
+    private assembleIniValues(): {[key: string]: string} {
 
         const result: {[key: string]: string} = {}
 
         const iniSheet: Spreadsheet.Sheet = this.errorHandler.checkSheet(SpreadsheetApp.getActiveSpreadsheet().getSheetByName('ini'))
 
-        const range = iniSheet.getRange('A:B')
-        const values = range.getValues()
+        const range: Spreadsheet.Range = iniSheet.getRange('A:B')
+        const values: string[][] = range.getValues()
 
         for (let i = 0; i < values.length; i ++) {
 
