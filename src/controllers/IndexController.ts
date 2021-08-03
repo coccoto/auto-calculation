@@ -33,8 +33,8 @@ export default class IndexController {
 
     public main(): void {
 
-        const fromIniPosition: {[key: string]: number} = this.workTableModel.getFromIniPosition()
-        const workTableSize: {[key: string]: number} = this.workTableModel.getWorkTableSize()
+        const fromIniPosition: Associative = this.workTableModel.getFromIniPosition()
+        const workTableSize: Associative = this.workTableModel.getWorkTableSize()
 
         this.reflectWorkTable(fromIniPosition.row, fromIniPosition.column, workTableSize.height, workTableSize.width)
     }
