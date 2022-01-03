@@ -1,8 +1,8 @@
 // declares
 import Spreadsheet = GoogleAppsScript.Spreadsheet
 // models
-import CalculationModel from '@src/models/CalculationModel'
-import ColorManagerModel from '@src/models/ColorManagerModel'
+import CalculationModel from '@/models/CalculationModel'
+import ColorManagerModel from '@/models/ColorManagerModel'
 
 export default class AssembleModel {
 

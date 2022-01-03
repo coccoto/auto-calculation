@@ -1,12 +1,12 @@
 // declares
 import Spreadsheet = GoogleAppsScript.Spreadsheet
 // models
-import ErrorHandler from '@src/models/common/ErrorHandler'
-import QueryModel from '@src/models/common/QueryModel'
-import AssembleModel from '@src/models/AssembleModel'
-import ColorManagerModel from '@src/models/ColorManagerModel'
-import TableReferenceModel from '@src/models/TableReferenceModel'
-import WorkTableModel from '@src/models/WorkTableModel'
+import ErrorHandler from '@/models/common/ErrorHandler'
+import QueryModel from '@/models/common/QueryModel'
+import AssembleModel from '@/models/AssembleModel'
+import ColorManagerModel from '@/models/ColorManagerModel'
+import TableReferenceModel from '@/models/TableReferenceModel'
+import WorkTableModel from '@/models/WorkTableModel'
 
 export default class IndexController {
 
