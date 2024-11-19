@@ -2,9 +2,6 @@ const path = require('path')
 const gasWebpackPlugin = require('gas-webpack-plugin')
 const copyWebpackPlugin = require('copy-webpack-plugin')
 
-const ENTRY_FILE = 'index.ts'
-const BUNDLE_FILE = 'index.gs'
-
 const SOURCE = path.resolve(__dirname, 'src')
 const OUTPUT = path.resolve(__dirname, 'dist')
 
@@ -14,24 +11,32 @@ module.exports = (env, argv) => {
 
     return {
         entry: {
-            index: path.resolve(__dirname, SOURCE, ENTRY_FILE),
+            index: path.resolve(SOURCE, 'index.ts'),
         },
         output: {
-            path: path.resolve(__dirname, OUTPUT),
-            filename: BUNDLE_FILE,
+            path: path.resolve(OUTPUT),
+            filename: 'index.gs',
         },
         devtool: IS_DEVELOPMENT ? 'inline-source-map' : IS_DEVELOPMENT,
         resolve: {
-            extensions: ['.js', '.ts'],
+            extensions: ['*', '.js', '.ts'],
             modules: [
-                path.resolve(__dirname, 'node_modules'),
+                path.resolve(__dirname, 'node_modules')
             ],
             alias: {
                 '@': path.resolve(SOURCE),
             },
         },
+        devServer: {
+            open: true,
+            static: {
+                directory: OUTPUT,
+                watch: true
+            },
+            historyApiFallback: true,
+        },
         module: {
-            rules: RULES,
+            rules: RULES
         },
         plugins: [
             new gasWebpackPlugin(),
@@ -40,13 +45,8 @@ module.exports = (env, argv) => {
                     {
                         from: 'appsscript.json',
                         to: 'appsscript.json',
-                        context: path.resolve(SOURCE)
+                        context: path.resolve('.', 'src')
                     },
-                    {
-                        from: 'notice.html',
-                        to: 'notice.html',
-                        context: path.resolve(SOURCE)
-                    }
                 ]
             })
         ],

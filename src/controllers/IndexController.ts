@@ -1,60 +1,49 @@
-// declares
-import Spreadsheet = GoogleAppsScript.Spreadsheet
-// models
-import ErrorHandler from '@/models/common/ErrorHandler'
-import QueryModel from '@/models/common/QueryModel'
-import AssembleModel from '@/models/AssembleModel'
-import ColorManagerModel from '@/models/ColorManagerModel'
-import TableReferenceModel from '@/models/TableReferenceModel'
-import WorkTableModel from '@/models/WorkTableModel'
+// services
+import IndexService from '@/services/IndexService'
+// utils
+import SheetReader from '@/utils/SheetReader'
 
 export default class IndexController {
 
-    private readonly sheet: Spreadsheet.Sheet
-
-    private readonly errorHandler: ErrorHandler
-    private readonly queryModel: QueryModel
-    private readonly assembleModel: AssembleModel
-    private readonly colorManagerModel: ColorManagerModel
-    private readonly tableReferenceModel: TableReferenceModel
-    private readonly workTableModel: WorkTableModel
+    private readonly sheet: GoogleAppsScript.Spreadsheet.Sheet
+    private readonly config: {[key: string]: string}
+    private readonly indexService: IndexService
 
     public constructor() {
-
-        this.sheet = SpreadsheetApp.getActiveSheet()
-
-        this.errorHandler = new ErrorHandler()
-        this.queryModel = new QueryModel(this.sheet, this.errorHandler)
-        this.assembleModel = new AssembleModel(this.sheet)
-        this.colorManagerModel = new ColorManagerModel(this.sheet)
-        this.tableReferenceModel = new TableReferenceModel(this.sheet)
-        this.workTableModel = new WorkTableModel(this.sheet, this.queryModel)
+        this.sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet()
+        this.config = SheetReader.getSheetValue('config')
+        this.indexService = new IndexService()
     }
 
     public main(): void {
-
-        const fromIniPosition: Associative = this.workTableModel.getFromIniPosition()
-        const workTableSize: Associative = this.workTableModel.getWorkTableSize()
-
-        this.reflectWorkTable(fromIniPosition.row, fromIniPosition.column, workTableSize.height, workTableSize.width)
+        this.calculateInputTable()
     }
 
-    private reflectWorkTable(currentRow: number, currentColumn: number, workTableHeight: number, workTableWidth: number): void {
+    /**
+     * テーブルに処理対象の年月を入力する
+     */
+    private calculateInputTable(startColumn: number = 3): void {
+        const startRow: number = 2
+        // 入力テーブルの高さ
+        const inputTableHeight: number = this.indexService.getInputTableHeight(startRow)
+        // 入力テーブルの幅
+        const inputTableWidth: number = Number(this.config.inputTableWidth)
 
-        const selectedWorkTable: Spreadsheet.Range = this.tableReferenceModel.selectTable(currentRow, currentColumn, workTableHeight, workTableWidth)
-        const workValues: {[name: string]: string[][]} = this.tableReferenceModel.tableExtraction(selectedWorkTable)
-
-        const lastIndex: number = workValues.values[0].length - 1
-
-        if (workValues.values[0][lastIndex] === '') {
+        // 入力テーブルの情報を連想配列で取得する
+        const inputTableRange: GoogleAppsScript.Spreadsheet.Range = this.sheet.getRange(startRow, startColumn, inputTableHeight, inputTableWidth)
+        const inputTableRowList: string[][] = inputTableRange.getValues()
+    
+        // １行目の残高セルに値がない場合、計算処理を終了する
+        const firstBalanceCellValue: string = inputTableRowList[0][inputTableRowList[0].length - 1]
+        if (firstBalanceCellValue === '') {
             return
         }
-        const isReverseMode: boolean = this.colorManagerModel.isReverseMode(workValues.colors[0][lastIndex - 1])
 
-        const result: {[name: string]: string[][]} = this.assembleModel.main(workValues, lastIndex, isReverseMode)
-        this.workTableModel.setWorkTable(selectedWorkTable, result)
+        // 値を再計算した結果を入力テーブルに再入力する
+        const calculatedInputTableRowList: string[][] = this.indexService.calculateExpenseTracker(inputTableRowList)
+        inputTableRange.setValues(calculatedInputTableRowList)
 
-        const nextTableColumn = currentColumn + workTableWidth
-        this.reflectWorkTable(currentRow, nextTableColumn, workTableHeight, workTableWidth)
+        // 再帰処理
+        this.calculateInputTable(startColumn + inputTableWidth)
     }
 }

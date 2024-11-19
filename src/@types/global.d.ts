@@ -1,4 +1,3 @@
 declare const global: {
-    main: object,
-    doGet: object,
+    [key: string]: any
 }
